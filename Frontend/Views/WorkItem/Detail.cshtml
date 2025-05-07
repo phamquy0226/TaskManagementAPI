@@ -31,6 +31,27 @@
         <dt class="col-sm-3">Loại công việc</dt>
         <dd class="col-sm-9">@Model.TaskType</dd>
 
+        <dt class="col-sm-3">Độ ưu tiên</dt>
+        <dd class="col-sm-9">
+            @{
+                var priorityText = Model.Priority switch
+                {
+                    1 => "Thấp",
+                    2 => "Trung bình",
+                    3 => "Cao",
+                    _ => "Không xác định"
+                };
+                var priorityClass = Model.Priority switch
+                {
+                    1 => "badge bg-success text-white",
+                    2 => "badge bg-warning text-dark",
+                    3 => "badge bg-danger text-white",
+                    _ => "badge bg-secondary"
+                };
+            }
+            <span class="@priorityClass">@priorityText</span>
+        </dd>
+
         <dt class="col-sm-3">Ghim</dt>
         <dd class="col-sm-9">@((Model.IsPinned) ? "Có" : "Không")</dd>
 
@@ -58,7 +79,6 @@
                 <div>@user</div>
             }
         </dd>
-
     </dl>
 
     <a href="@Url.Action("Index", "WorkItem")" class="btn btn-secondary">Quay lại danh sách</a>

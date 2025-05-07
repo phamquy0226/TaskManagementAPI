@@ -24,6 +24,11 @@ namespace Frontend.Controllers
         public async Task<IActionResult> Index([FromQuery] WorkItemFilterModel filter)
         {
             var workItems = await _workItemApiService.GetFilteredAsync(filter);
+            var users = await _userApiService.GetAllAsync(); 
+            var departments = await _departmentApiService.GetAllAsync(); 
+
+            ViewBag.Users = users;
+            ViewBag.Departments = departments;
             return View(workItems);
         }
 

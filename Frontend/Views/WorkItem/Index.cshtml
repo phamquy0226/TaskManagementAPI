@@ -1,4 +1,5 @@
-﻿@model List<Frontend.Models.WorkItemViewModel>
+﻿
+@model List<Frontend.Models.WorkItemViewModel>
 @{
     ViewData["Title"] = "Danh sách công việc";
     var currentQuery = Context.Request.Query;
@@ -12,14 +13,33 @@
             <input name="SearchTaskName" class="form-control" placeholder="Tên công việc"
                    value="@currentQuery["SearchTaskName"]" />
         </div>
+
+        <!-- Người thực hiện -->
         <div class="col-md-2">
-            <input name="UserName" class="form-control" placeholder="Người nhận"
-                   value="@currentQuery["UserName"]" />
+            <select name="UserName" class="form-control">
+                <option value="">-- Người thực hiện --</option>
+                @foreach (var user in ViewBag.Users)
+                {
+                    <option value="@user.UserName" selected="@(currentQuery["UserName"] == user.UserName)">
+                        @user.UserName
+                    </option>
+                }
+            </select>
         </div>
+
+        <!-- Người giao -->
         <div class="col-md-2">
-            <input name="AssignerName" class="form-control" placeholder="Người giao"
-                   value="@currentQuery["AssignerName"]" />
+            <select name="AssignerName" class="form-control">
+                <option value="">-- Người giao --</option>
+                @foreach (var user in ViewBag.Users)
+                {
+                    <option value="@user.UserName" selected="@(currentQuery["UserName"] == user.UserName)">
+                        @user.UserName
+                    </option>
+                }
+            </select>
         </div>
+
         <div class="col-md-2">
             <select name="Status" class="form-control">
                 <option value="">-- Trạng thái --</option>
@@ -28,6 +48,16 @@
                 <option value="2" selected="@(currentQuery["Status"] == "2")">Đã xong</option>
             </select>
         </div>
+
+        <div class="col-md-2">
+            <select name="Priority" class="form-control">
+                <option value="">-- Độ ưu tiên --</option>
+                <option value="1" selected="@(currentQuery["Priority"] == "1")">Thấp</option>
+                <option value="2" selected="@(currentQuery["Priority"] == "2")">Trung bình</option>
+                <option value="3" selected="@(currentQuery["Priority"] == "3")">Cao</option>
+            </select>
+        </div>
+
         <div class="col-md-2">
             <select name="IsPinned" class="form-control">
                 <option value="">-- Ghim? --</option>
@@ -35,6 +65,27 @@
                 <option value="false" selected="@(currentQuery["IsPinned"] == "false")">Không</option>
             </select>
         </div>
+
+        <div class="col-md-2">
+            <input type="date" name="StartDateFrom" class="form-control" value="@currentQuery["StartDateFrom"]" />
+        </div>
+        <div class="col-md-2">
+            <input type="date" name="EndDateTo" class="form-control" value="@currentQuery["EndDateTo"]" />
+        </div>
+
+        <!-- Phòng ban -->
+        <div class="col-md-2">
+            <select name="DepartmentName" class="form-control">
+                <option value="">-- Phòng ban --</option>
+                @foreach (var dept in ViewBag.Departments)
+                {
+                    <option value="@dept.DepartmentName" selected="@(currentQuery["DepartmentName"] == dept.DepartmentName)">
+                        @dept.DepartmentName
+                    </option>
+                }
+            </select>
+        </div>
+
         <div class="col-md-2 d-grid">
             <button type="submit" class="btn btn-primary">Lọc</button>
         </div>
@@ -43,11 +94,17 @@
 
 <a asp-action="Create" class="btn btn-success mb-3">+ Tạo công việc</a>
 
+<!-- bảng danh sách giữ nguyên như bạn viết, không cần chỉnh thêm -->
+
+
 <table class="table table-bordered table-hover">
     <thead class="thead-dark">
         <tr>
             <th>Tên công việc</th>
-            <th>Người nhận</th>
+            <th>Người thực hiện</th>
+            <th>Phòng ban nhận</th>
+            <th>Người giao</th>
+            <th>Độ ưu tiên</th>
             <th>Trạng thái</th>
             <th>Tiến độ</th>
             <th>Ghim?</th>
@@ -59,6 +116,36 @@
     <tbody>
         @foreach (var item in Model)
         {
+            var priorityText = item.Priority switch
+            {
+                1 => "Thấp",
+                2 => "Trung bình",
+                3 => "Cao",
+                _ => "Không xác định"
+            };
+            var priorityClass = item.Priority switch
+            {
+                1 => "badge bg-success text-white",
+                2 => "badge bg-warning text-dark",
+                3 => "badge bg-danger text-white",
+                _ => "badge bg-secondary"
+            };
+
+            var statusText = item.Status switch
+            {
+                0 => "Chưa thực hiện",
+                1 => "Đang thực hiện",
+                2 => "Đã xong",
+                _ => "Không xác định"
+            };
+            var statusClass = item.Status switch
+            {
+                0 => "badge bg-secondary",
+                1 => "badge bg-warning text-dark",
+                2 => "badge bg-success",
+                _ => "badge bg-light"
+            };
+
             <tr>
                 <td>@item.TaskName</td>
                 <td>
@@ -68,27 +155,19 @@
                     }
                 </td>
                 <td>
-                    @{
-                        var statusText = item.Status switch
-                        {
-                            0 => "Chưa thực hiện",
-                            1 => "Đang thực hiện",
-                            2 => "Đã xong",
-                            _ => "Không xác định"
-                        };
-                        var statusClass = item.Status switch
-                        {
-                            0 => "badge badge-secondary",
-                            1 => "badge badge-warning",
-                            2 => "badge badge-success",
-                            _ => "badge badge-light"
-                        };
+                    @foreach (var dept in item.DepartmentList?.Split(',', StringSplitOptions.TrimEntries) ?? Enumerable.Empty<string>())
+                    {
+                        <div>@dept</div>
                     }
-                    <span class="@statusClass text-dark">@statusText</span>
                 </td>
+                <td>@item.AssignerName</td>
+                <td><span class="@priorityClass">@priorityText</span></td>
+                <td><span class="@statusClass">@statusText</span></td>
                 <td>
                     <div class="progress" style="height: 20px;">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: @item.Progress%;" aria-valuenow="@item.Progress" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-info" role="progressbar"
+                             style="width: @item.Progress%;" aria-valuenow="@item.Progress"
+                             aria-valuemin="0" aria-valuemax="100">
                             @item.Progress%
                         </div>
                     </div>

@@ -40,18 +40,18 @@
 
     <!-- Loại công việc -->
     <div class="form-group">
-        <label>Độ ưu tiên</label><br />
+        <label>Loại công việc</label><br />
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" asp-for="TaskType" value="0" />
-            <label class="form-check-label">Thấp</label>
+            <input class="form-check-input" type="radio" asp-for="TaskType" value="Tìm hiều" />
+            <label class="form-check-label">Tìm hiều</label>
         </div>
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" asp-for="TaskType" value="1" />
-            <label class="form-check-label">Vừa</label>
+            <input class="form-check-input" type="radio" asp-for="TaskType" value="Triển khai" />
+            <label class="form-check-label">Triển khai</label>
         </div>
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" asp-for="TaskType" value="2" />
-            <label class="form-check-label">Cao</label>
+            <input class="form-check-input" type="radio" asp-for="TaskType" value="Báo cáo" />
+            <label class="form-check-label">Báo cáo</label>
         </div>
         <span asp-validation-for="TaskType" class="text-danger"></span>
         <div class="form-check form-check-inline">
@@ -59,6 +59,23 @@
             <label asp-for="IsPinned" class="form-check-label"></label>
         </div>
         <span asp-validation-for="IsPinned" class="text-danger"></span>
+    </div>
+    <!-- Độ ưu tiên -->
+    <div class="form-group">
+        <label>Độ ưu tiên</label><br />
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" asp-for="Priority" value="0"/>
+            <label class="form-check-label">Thấp</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" asp-for="Priority" value="1"/>
+            <label class="form-check-label">Trung bình</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" asp-for="Priority" value="2"/>
+            <label class="form-check-label">Cao</label>
+        </div>
+        <span asp-validation-for="Priority" class="text-danger"></span>
     </div>
 
     <!-- Ngày bắt đầu / kết thúc -->
