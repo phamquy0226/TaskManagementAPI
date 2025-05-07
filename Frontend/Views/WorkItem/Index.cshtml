@@ -1,0 +1,105 @@
+﻿@model List<Frontend.Models.WorkItemViewModel>
+@{
+    ViewData["Title"] = "Danh sách công việc";
+    var currentQuery = Context.Request.Query;
+}
+
+<h2 class="mb-3">@ViewData["Title"]</h2>
+
+<form method="get" class="mb-4">
+    <div class="row g-2">
+        <div class="col-md-2">
+            <input name="SearchTaskName" class="form-control" placeholder="Tên công việc"
+                   value="@currentQuery["SearchTaskName"]" />
+        </div>
+        <div class="col-md-2">
+            <input name="UserName" class="form-control" placeholder="Người nhận"
+                   value="@currentQuery["UserName"]" />
+        </div>
+        <div class="col-md-2">
+            <input name="AssignerName" class="form-control" placeholder="Người giao"
+                   value="@currentQuery["AssignerName"]" />
+        </div>
+        <div class="col-md-2">
+            <select name="Status" class="form-control">
+                <option value="">-- Trạng thái --</option>
+                <option value="0" selected="@(currentQuery["Status"] == "0")">Chưa thực hiện</option>
+                <option value="1" selected="@(currentQuery["Status"] == "1")">Đang thực hiện</option>
+                <option value="2" selected="@(currentQuery["Status"] == "2")">Đã xong</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="IsPinned" class="form-control">
+                <option value="">-- Ghim? --</option>
+                <option value="true" selected="@(currentQuery["IsPinned"] == "true")">Có</option>
+                <option value="false" selected="@(currentQuery["IsPinned"] == "false")">Không</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Lọc</button>
+        </div>
+    </div>
+</form>
+
+<a asp-action="Create" class="btn btn-success mb-3">+ Tạo công việc</a>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Tên công việc</th>
+            <th>Người nhận</th>
+            <th>Trạng thái</th>
+            <th>Tiến độ</th>
+            <th>Ghim?</th>
+            <th>Bắt đầu</th>
+            <th>Kết thúc</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.TaskName</td>
+                <td>
+                    @foreach (var user in item.UserList?.Split(',', StringSplitOptions.TrimEntries) ?? Enumerable.Empty<string>())
+                    {
+                        <div>@user</div>
+                    }
+                </td>
+                <td>
+                    @{
+                        var statusText = item.Status switch
+                        {
+                            0 => "Chưa thực hiện",
+                            1 => "Đang thực hiện",
+                            2 => "Đã xong",
+                            _ => "Không xác định"
+                        };
+                        var statusClass = item.Status switch
+                        {
+                            0 => "badge badge-secondary",
+                            1 => "badge badge-warning",
+                            2 => "badge badge-success",
+                            _ => "badge badge-light"
+                        };
+                    }
+                    <span class="@statusClass text-dark">@statusText</span>
+                </td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: @item.Progress%;" aria-valuenow="@item.Progress" aria-valuemin="0" aria-valuemax="100">
+                            @item.Progress%
+                        </div>
+                    </div>
+                </td>
+                <td>@(item.IsPinned ? "✅" : "")</td>
+                <td>@(item.StartDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                <td>@(item.EndDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                <td>
+                    <a asp-action="Detail" asp-route-id="@item.WorkItemID" class="btn btn-sm btn-info">Chi tiết</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

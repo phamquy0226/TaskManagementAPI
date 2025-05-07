@@ -1,0 +1,14 @@
+﻿using Frontend.Models;
+
+namespace Frontend.Services
+{
+    public interface IWorkItemApiService
+    {
+        Task<List<WorkItemViewModel>> GetAllAsync();
+        Task<bool> CreateAsync(WorkItemCreateModel model);
+        Task<WorkItemDetailModel> GetWorkItemDetailAsync(int id);
+        Task<List<WorkItemViewModel>> GetFilteredAsync(WorkItemFilterModel filter);
+
+    }
+
+}
