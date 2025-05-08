@@ -28,21 +28,21 @@ public class NoteApiService : INoteApiService
 
     public async Task<bool> AddNoteAsync(int workItemId, string content)
     {
-        var dateCreate = DateTime.UtcNow;  // Lấy thời gian UTC hiện tại
+        var dateCreate = DateTime.UtcNow;  
 
         var noteData = new
         {
-            WorkItemID = workItemId,  // Thêm WorkItemID
-            Content = content,        // Nội dung ghi chú
-            DateCreate = dateCreate   // Ngày giờ tạo ghi chú
+            WorkItemID = workItemId, 
+            Content = content,        
+            DateCreate = dateCreate   
         };
 
-        var json = JsonConvert.SerializeObject(noteData);  // Chuyển đối tượng thành JSON
+        var json = JsonConvert.SerializeObject(noteData);  
         var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync($"/api/workitems/{workItemId}/notes", httpContent);
 
-        return response.IsSuccessStatusCode;  // Kiểm tra xem yêu cầu có thành công không
+        return response.IsSuccessStatusCode;  
     }
 
 

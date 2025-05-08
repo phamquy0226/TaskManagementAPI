@@ -4,6 +4,6 @@
     {
         public int WorkItemID { get; set; }
         public string Content { get; set; }
-        public DateTime DateCreate { get; set; } // Thêm DateCreate
+        public DateTime DateCreate { get; set; }
     }
 }

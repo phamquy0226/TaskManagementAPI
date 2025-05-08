@@ -37,7 +37,7 @@ namespace Frontend.Services
             }
             catch (Exception ex)
             {
-                // Log the error to console or a logging framework
+               
                 Console.WriteLine("Error calling GetAllAsync: " + ex.Message);
                 return new List<WorkItemViewModel>();
             }
@@ -90,7 +90,7 @@ namespace Frontend.Services
             }
             catch (Exception ex)
             {
-                // Log the error to console or a logging framework
+                
                 Console.WriteLine("Error calling CreateAsync: " + ex.Message);
                 return false;
             }
@@ -100,7 +100,7 @@ namespace Frontend.Services
         {
             try
             {
-                // Thay đổi URL thành /api/WorkItem/{id} (chữ "W" viết hoa)
+               
                 var response = await _httpClient.GetAsync($"/api/WorkItem/{id}");
 
                 if (response.IsSuccessStatusCode)
@@ -108,7 +108,7 @@ namespace Frontend.Services
                     var content = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject<ResponseModel<WorkItemDetailModel>>(content);
 
-                    // Kiểm tra nếu kết quả hợp lệ và trả về dữ liệu
+                    
                     if (result != null && result.Success)
                     {
                         return result.Data;
@@ -125,12 +125,39 @@ namespace Frontend.Services
             }
             catch (Exception ex)
             {
-                // Ghi lại lỗi vào console hoặc framework ghi log
+              
                 Console.WriteLine("Lỗi khi gọi GetWorkItemDetailAsync: " + ex.Message);
             }
 
-            return null; // Trả về null nếu không tìm thấy công việc hoặc có lỗi
+            return null; 
         }
+
+        public async Task<bool> UpdateAsync(int id, WorkItemEditModel model)
+        {
+            try
+            {
+                var jsonContent = JsonConvert.SerializeObject(model);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync($"/api/WorkItem/{id}", content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Failed to update work item {id}, status code: {response.StatusCode}");
+                    return false;
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<ResponseModel<object>>(responseContent);
+                return result?.Success ?? false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling UpdateAsync: {ex.Message}");
+                return false;
+            }
+        }
+
     }
 
     public class ResponseModel<T>

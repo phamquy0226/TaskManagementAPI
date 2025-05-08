@@ -29,10 +29,10 @@ namespace QuanLyCongViecAPI.Services
             {
                 if (result.Item3 != null && result.Item3.Rows.Count > 0)
                 {
-                    // Log the result before mapping to List
+                    
                     foreach (DataRow row in result.Item3.Rows)
                     {
-                        // Log or inspect row values
+                       
                         Console.WriteLine($"NoteID: {row["NoteID"]}, WorkItemID: {row["WorkItemID"]}, Content: {row["Content"]}");
                     }
 
@@ -58,7 +58,7 @@ namespace QuanLyCongViecAPI.Services
             {
         new SqlParameter("@WorkItemID", SqlDbType.Int) { Value = model.WorkItemID },
         new SqlParameter("@Content", SqlDbType.NVarChar, -1) { Value = model.Content },
-        new SqlParameter("@DateCreate", SqlDbType.DateTime) { Value = model.DateCreate } // Truyền DateCreate vào stored procedure
+        new SqlParameter("@DateCreate", SqlDbType.DateTime) { Value = model.DateCreate } 
             };
 
             Tuple<bool, string, int?> result = _databaseHelper.ExecuteNonQueryStoredProcedureWithStatus("sp_AddNote", parameters);

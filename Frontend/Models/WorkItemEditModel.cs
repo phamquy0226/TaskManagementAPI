@@ -1,8 +1,11 @@
-﻿namespace Frontend.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Frontend.Models
 {
-    public class WorkItemDetailModel
+    public class WorkItemEditModel
     {
         public int WorkItemID { get; set; }
+
         public string TaskName { get; set; }
         public int Status { get; set; }
         public int Progress { get; set; }
@@ -10,13 +13,15 @@
         public bool IsPinned { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int AssignerID { get; set; }
-        public string AssignerName { get; set; }
-        public int Priority { get; set; }
-        public string DepartmentList { get; set; }
-        public string UserList { get; set; }
-        public List<NoteModel> Notes { get; set; } = new List<NoteModel>();
 
+        public int AssignerID { get; set; }
+
+        public int SelectedDepartmentID { get; set; }
+        public List<int> DepartmentIDs { get; set; } = new();
+
+        public int SelectedUserID { get; set; }
+        public List<int> UserIDs { get; set; } = new();
+        public int Priority { get; set; }
     }
 
 }

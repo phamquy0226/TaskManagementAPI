@@ -14,11 +14,11 @@
                    value="@currentQuery["SearchTaskName"]" />
         </div>
 
-        <!-- Người thực hiện -->
+      
         <div class="col-md-2">
             <select name="UserName" class="form-control">
                 <option value="">-- Người thực hiện --</option>
-                @foreach (var user in ViewBag.Users)
+                @foreach (var user in ViewBag.Assigned)
                 {
                     <option value="@user.UserName" selected="@(currentQuery["UserName"] == user.UserName)">
                         @user.UserName
@@ -27,18 +27,20 @@
             </select>
         </div>
 
-        <!-- Người giao -->
+        
+      
         <div class="col-md-2">
             <select name="AssignerName" class="form-control">
                 <option value="">-- Người giao --</option>
-                @foreach (var user in ViewBag.Users)
+                @foreach (var user in ViewBag.Assigner)
                 {
-                    <option value="@user.UserName" selected="@(currentQuery["UserName"] == user.UserName)">
+                    <option value="@user.UserName" selected="@(currentQuery["AssignerName"] == user.UserName)">
                         @user.UserName
                     </option>
                 }
             </select>
         </div>
+
 
         <div class="col-md-2">
             <select name="Status" class="form-control">
@@ -73,18 +75,20 @@
             <input type="date" name="EndDateTo" class="form-control" value="@currentQuery["EndDateTo"]" />
         </div>
 
-        <!-- Phòng ban -->
+     
+        
         <div class="col-md-2">
-            <select name="DepartmentName" class="form-control">
+            <select name="DepartmentID" class="form-control">
                 <option value="">-- Phòng ban --</option>
                 @foreach (var dept in ViewBag.Departments)
                 {
-                    <option value="@dept.DepartmentName" selected="@(currentQuery["DepartmentName"] == dept.DepartmentName)">
+                    <option value="@dept.DepartmentID" selected="@(currentQuery["DepartmentID"] == dept.DepartmentID)">
                         @dept.DepartmentName
                     </option>
                 }
             </select>
         </div>
+        
 
         <div class="col-md-2 d-grid">
             <button type="submit" class="btn btn-primary">Lọc</button>
@@ -94,7 +98,6 @@
 
 <a asp-action="Create" class="btn btn-success mb-3">+ Tạo công việc</a>
 
-<!-- bảng danh sách giữ nguyên như bạn viết, không cần chỉnh thêm -->
 
 
 <table class="table table-bordered table-hover">
@@ -177,7 +180,9 @@
                 <td>@(item.EndDate?.ToString("dd/MM/yyyy") ?? "-")</td>
                 <td>
                     <a asp-action="Detail" asp-route-id="@item.WorkItemID" class="btn btn-sm btn-info">Chi tiết</a>
+                    <a asp-action="Edit" asp-route-id="@item.WorkItemID" class="btn btn-sm btn-warning">Chỉnh sửa</a>
                 </td>
+
             </tr>
         }
     </tbody>

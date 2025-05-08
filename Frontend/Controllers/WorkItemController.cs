@@ -24,10 +24,12 @@ namespace Frontend.Controllers
         public async Task<IActionResult> Index([FromQuery] WorkItemFilterModel filter)
         {
             var workItems = await _workItemApiService.GetFilteredAsync(filter);
-            var users = await _userApiService.GetAllAsync(); 
+            var assigned = await _userApiService.GetAllAsync();
+            var assigner = await _userApiService.GetAllAsync();
             var departments = await _departmentApiService.GetAllAsync(); 
 
-            ViewBag.Users = users;
+            ViewBag.Assigned = assigned;
+            ViewBag.Assigner = assigner;
             ViewBag.Departments = departments;
             return View(workItems);
         }
@@ -69,6 +71,68 @@ namespace Frontend.Controllers
             workItem.Notes = await _noteApiService.GetNotesByWorkItemIdAsync(id);
             return View(workItem);
         }
+       
+        public async Task<IActionResult> Edit(int id)
+        {
+            var workItemDetail = await _workItemApiService.GetWorkItemDetailAsync(id);
+            var users = await _userApiService.GetAllAsync();
+            var departments = await _departmentApiService.GetAllAsync();
+
+            ViewBag.Users = users;
+            ViewBag.Departments = departments;
+
+            var model = new WorkItemEditModel
+            {
+                WorkItemID = workItemDetail.WorkItemID,
+                TaskName = workItemDetail.TaskName,
+                Status = workItemDetail.Status,
+                Progress = workItemDetail.Progress,
+                TaskType = workItemDetail.TaskType,
+                IsPinned = workItemDetail.IsPinned,
+                StartDate = workItemDetail.StartDate,
+                EndDate = workItemDetail.EndDate,
+                AssignerID = workItemDetail.AssignerID,
+                Priority = workItemDetail.Priority,
+                DepartmentIDs = workItemDetail.DepartmentList?
+                    .Split(',', StringSplitOptions.TrimEntries)
+                    .Select(name => departments.FirstOrDefault(d => d.DepartmentName == name)?.DepartmentID ?? 0)
+                    .Where(id => id != 0)
+                    .ToList() ?? new List<int>(),
+                UserIDs = workItemDetail.UserList?
+                    .Split(',', StringSplitOptions.TrimEntries)
+                    .Select(name => users.FirstOrDefault(u => u.UserName == name)?.UserID ?? 0)
+                    .Where(id => id != 0)
+                    .ToList() ?? new List<int>()
+            };
+
+            return View(model);
+        }
+
+       
+        [HttpPost]
+        public async Task<IActionResult> Edit(WorkItemEditModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                
+                ViewBag.Users = await _userApiService.GetAllAsync();
+                ViewBag.Departments = await _departmentApiService.GetAllAsync();
+                return View(model);
+            }
+
+            var result = await _workItemApiService.UpdateAsync(model.WorkItemID, model);
+            if (result)
+            {
+                return RedirectToAction("Index");
+            }
+
+            
+            ViewBag.Users = await _userApiService.GetAllAsync();
+            ViewBag.Departments = await _departmentApiService.GetAllAsync();
+            ModelState.AddModelError(string.Empty, "Cập nhật thất bại");
+            return View(model);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> AddNote(int workItemId, string content)
@@ -79,7 +143,7 @@ namespace Frontend.Controllers
                 return RedirectToAction("Details", new { id = workItemId });
             }
 
-            // Gọi phương thức AddNoteAsync để thêm ghi chú
+            
             var result = await _noteApiService.AddNoteAsync(workItemId, content);
 
             if (result)
@@ -98,7 +162,7 @@ namespace Frontend.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteNote(int workItemId, int noteId)
         {
-            // Xoá ghi chú cho công việc
+           
             await _noteApiService.DeleteNoteAsync(workItemId, noteId);
             return RedirectToAction("Detail", new { id = workItemId });
         }

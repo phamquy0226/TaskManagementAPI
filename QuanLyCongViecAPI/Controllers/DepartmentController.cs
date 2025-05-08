@@ -13,7 +13,7 @@ public class DepartmentController : ControllerBase
         _departmentService = departmentService;
     }
 
-    // Lấy danh sách department
+   
     [HttpGet]
     public ActionResult<ResponseModel> GetDepartments()
     {
@@ -21,7 +21,7 @@ public class DepartmentController : ControllerBase
         return Ok(result);
     }
 
-    // Thêm mới department
+    
     [HttpPost]
     public ActionResult<ResponseModel> CreateDepartment([FromBody] DepartmentCreateModel model)
     {
@@ -38,7 +38,7 @@ public class DepartmentController : ControllerBase
         return BadRequest(result);
     }
 
-    // Cập nhật department
+    
     [HttpPut("{id}")]
     public ActionResult<ResponseModel> UpdateDepartment(int id, [FromBody] DepartmentUpdateModel model)
     {
@@ -55,7 +55,7 @@ public class DepartmentController : ControllerBase
         return BadRequest(result);
     }
 
-    // Xoá department
+   
     [HttpDelete("{id}")]
     public ActionResult<ResponseModel> DeleteDepartment(int id)
     {
