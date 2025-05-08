@@ -8,7 +8,7 @@ namespace Frontend.Services
         Task<bool> CreateAsync(WorkItemCreateModel model);
         Task<WorkItemDetailModel> GetWorkItemDetailAsync(int id);
         Task<List<WorkItemViewModel>> GetFilteredAsync(WorkItemFilterModel filter);
-
+        Task<bool> UpdateAsync(int id, WorkItemEditModel model);
     }
 
 }

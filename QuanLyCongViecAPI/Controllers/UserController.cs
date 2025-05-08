@@ -13,7 +13,7 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    // Lấy danh sách user
+    
     [HttpGet]
     public ActionResult<ResponseModel> GetUsers()
     {
@@ -21,7 +21,7 @@ public class UserController : ControllerBase
         return Ok(result);
     }
 
-    // Thêm mới user
+  
     [HttpPost]
     public ActionResult<ResponseModel> CreateUser([FromBody] string userName)
     {
@@ -38,7 +38,7 @@ public class UserController : ControllerBase
         return BadRequest(result);
     }
 
-    // Sửa thông tin user
+ 
     [HttpPut("{id}")]
     public ActionResult<ResponseModel> UpdateUser(int id, [FromBody] string userName)
     {
@@ -55,7 +55,7 @@ public class UserController : ControllerBase
         return BadRequest(result);
     }
 
-    // Xoá user
+ 
     [HttpDelete("{id}")]
     public ActionResult<ResponseModel> DeleteUser(int id)
     {

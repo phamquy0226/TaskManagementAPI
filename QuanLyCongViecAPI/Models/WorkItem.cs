@@ -11,9 +11,9 @@
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int AssignerID { get; set; }
-        public string AssignerName { get; set; } // For display
+        public string AssignerName { get; set; } 
         public int Priority { get; set; }
-        public string DepartmentList { get; set; } // For display
-        public string UserList { get; set; } // For display
+        public string DepartmentList { get; set; } 
+        public string UserList { get; set; } 
     }
 }

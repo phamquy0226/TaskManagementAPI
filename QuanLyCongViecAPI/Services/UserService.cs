@@ -15,7 +15,7 @@ namespace QuanLyCongViecAPI.Services
             _databaseHelper = new DatabaseHelper(configuration);
         }
 
-        // Lấy danh sách user
+        
         public ResponseModel GetUsers()
         {
             Tuple<bool, string, DataTable> result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_GetUsers");
@@ -30,7 +30,7 @@ namespace QuanLyCongViecAPI.Services
             }
         }
 
-        // Thêm mới user
+        
         public ResponseModel InsertUser(string userName)
         {
             SqlParameter[] parameters = new SqlParameter[]
@@ -50,7 +50,7 @@ namespace QuanLyCongViecAPI.Services
             }
         }
 
-        // Sửa thông tin user
+       
         public ResponseModel UpdateUser(int userID, string userName)
         {
             SqlParameter[] parameters = new SqlParameter[]
@@ -71,7 +71,7 @@ namespace QuanLyCongViecAPI.Services
             }
         }
 
-        // Xoá user
+       
         public ResponseModel DeleteUser(int userID)
         {
             SqlParameter[] parameters = new SqlParameter[]

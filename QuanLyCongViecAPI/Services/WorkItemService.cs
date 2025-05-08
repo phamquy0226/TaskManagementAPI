@@ -40,7 +40,7 @@ namespace QuanLyCongViecAPI.Services
             }
             else
             {
-                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1 }; // Or a specific error code
+                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1 }; 
             }
         }
 
@@ -64,7 +64,7 @@ namespace QuanLyCongViecAPI.Services
         new SqlParameter("@UserIDs", SqlDbType.VarChar, -1) { Value = (object?)userIDs ?? DBNull.Value }
             };
 
-            // Gọi hàm đọc kết quả từ bảng #Status
+            
             var result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_CreateWorkItem", parameters);
 
             if (result.Item1)
@@ -87,7 +87,7 @@ namespace QuanLyCongViecAPI.Services
 
         public ResponseModel UpdateWorkItem(WorkItemUpdateModel model)
         {
-            // Kiểm tra để đảm bảo WorkItemID không bị thay đổi (dù model luôn cần có WorkItemID)
+            
             if (model.WorkItemID <= 0)
             {
                 return new ResponseModel { Success = false, Message = "Invalid WorkItemID", ErrorCode = -1 };
@@ -112,7 +112,7 @@ namespace QuanLyCongViecAPI.Services
         new SqlParameter("@UserIDs", SqlDbType.VarChar, -1) { Value = (object?)userIDs ?? DBNull.Value }
             };
 
-            // Gọi stored procedure để cập nhật dữ liệu
+            
             var result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_UpdateWorkItem", parameters);
 
             if (result.Item1)

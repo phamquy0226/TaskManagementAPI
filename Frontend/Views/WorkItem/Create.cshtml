@@ -13,7 +13,7 @@
         <span asp-validation-for="TaskName" class="text-danger"></span>
     </div>
 
-    <!-- Trạng thái -->
+    
     <div class="form-group">
         <label>Trạng thái</label><br />
         <div class="form-check form-check-inline">
@@ -31,14 +31,14 @@
         <span asp-validation-for="Status" class="text-danger"></span>
     </div>
 
-    <!-- Tiến độ -->
+   
     <div class="form-group">
         <label asp-for="Progress"></label>
         <input asp-for="Progress" class="form-control" type="number" min="0" max="100" />
         <span asp-validation-for="Progress" class="text-danger"></span>
     </div>
 
-    <!-- Loại công việc -->
+   
     <div class="form-group">
         <label>Loại công việc</label><br />
         <div class="form-check form-check-inline">
@@ -60,7 +60,7 @@
         </div>
         <span asp-validation-for="IsPinned" class="text-danger"></span>
     </div>
-    <!-- Độ ưu tiên -->
+   
     <div class="form-group">
         <label>Độ ưu tiên</label><br />
         <div class="form-check form-check-inline">
@@ -78,7 +78,7 @@
         <span asp-validation-for="Priority" class="text-danger"></span>
     </div>
 
-    <!-- Ngày bắt đầu / kết thúc -->
+   
     <div class="form-group">
         <label asp-for="StartDate"></label>
         <input asp-for="StartDate" type="date" class="form-control" />
@@ -90,7 +90,7 @@
         <span asp-validation-for="EndDate" class="text-danger"></span>
     </div>
 
-    <!-- Người giao việc -->
+   
     <div class="form-group">
         <label>Người giao việc</label>
         <select asp-for="AssignerID" asp-items="@(new SelectList(ViewBag.Users, "UserID", "UserName"))" class="form-control">
@@ -99,7 +99,7 @@
         <span asp-validation-for="AssignerID" class="text-danger"></span>
     </div>
 
-    <!-- Phòng ban nhận -->
+   
     <div class="form-group">
         <label>Chọn phòng ban nhận</label>
         <div class="input-group">
@@ -117,7 +117,7 @@
         <ul id="department-list" class="mt-2"></ul>
     </div>
 
-    <!-- Người nhận -->
+    
     <div class="form-group">
         <label>Chọn người nhận công việc</label>
         <div class="input-group">

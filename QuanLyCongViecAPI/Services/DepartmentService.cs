@@ -60,10 +60,10 @@ namespace QuanLyCongViecAPI.Services
             }
         }
 
-        // Cập nhật thông tin department
+        
         public ResponseModel UpdateDepartment(DepartmentUpdateModel model)
         {
-            // Kiểm tra để đảm bảo DepartmentID không bị thay đổi
+           
             if (model.DepartmentID <= 0)
             {
                 return new ResponseModel { Success = false, Message = "Invalid DepartmentID", ErrorCode = -1 };
@@ -87,7 +87,7 @@ namespace QuanLyCongViecAPI.Services
             }
         }
 
-        // Xoá department
+        
         public ResponseModel DeleteDepartment(int departmentID)
         {
             if (departmentID <= 0)

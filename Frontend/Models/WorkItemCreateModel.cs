@@ -3,7 +3,7 @@
     public class WorkItemCreateModel
     {
         public string TaskName { get; set; }
-        public string Status { get; set; }
+        public int Status { get; set; }
         public int Progress { get; set; }
         public string TaskType { get; set; }
         public bool IsPinned { get; set; }
