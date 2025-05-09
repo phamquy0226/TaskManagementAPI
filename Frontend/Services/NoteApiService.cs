@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Frontend.Models;
 using Frontend.Services;
+using Frontend.Repository;
 
 public class NoteApiService : INoteApiService
 {

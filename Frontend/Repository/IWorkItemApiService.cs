@@ -1,6 +1,6 @@
 ﻿using Frontend.Models;
 
-namespace Frontend.Services
+namespace Frontend.Repository
 {
     public interface IWorkItemApiService
     {
