@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
+using Frontend.Repository;
 
 namespace Frontend.Services
 {

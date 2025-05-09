@@ -1,4 +1,5 @@
-﻿using Frontend.Services;
+﻿using Frontend.Repository;
+using Frontend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
