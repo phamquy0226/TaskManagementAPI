@@ -71,5 +71,16 @@ public class WorkItemController : ControllerBase
         return BadRequest(result);
     }
 
+    [HttpDelete("{id}")]
+    public IActionResult DeleteWorkItem(int id)
+    {
+        var result = _workItemService.DeleteWorkItem(id);
+        if (result.Success)
+        {
+            return Ok(result);
+        }
+        return BadRequest(result);
+    }
+
 
 }
