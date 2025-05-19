@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuanLyCongViecAPI", "QuanLyCongViecAPI\QuanLyCongViecAPI.csproj", "{A064ED09-9C45-4682-BB15-5C77C55CF063}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementAPI", "QuanLyCongViecAPI\TaskManagementAPI.csproj", "{A064ED09-9C45-4682-BB15-5C77C55CF063}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend", "Frontend\Frontend.csproj", "{9164CE8B-6235-47D5-AC5A-1A8A8DF988D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementFrontend", "Frontend\TaskManagementFrontend.csproj", "{9164CE8B-6235-47D5-AC5A-1A8A8DF988D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

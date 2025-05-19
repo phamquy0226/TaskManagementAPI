@@ -61,10 +61,10 @@ namespace QuanLyCongViecAPI.Services
         new SqlParameter("@AssignerID", SqlDbType.Int) { Value = model.AssignerID },
         new SqlParameter("@Priority", SqlDbType.Int) { Value = model.Priority },
         new SqlParameter("@DepartmentIDs", SqlDbType.VarChar, -1) { Value = (object?)departmentIDs ?? DBNull.Value },
-        new SqlParameter("@UserIDs", SqlDbType.VarChar, -1) { Value = (object?)userIDs ?? DBNull.Value }
+        new SqlParameter("@UserIDs", SqlDbType.VarChar, -1) { Value = (object?)userIDs ?? DBNull.Value },
+        new SqlParameter("@DateCreate", SqlDbType.DateTime) { Value = DateTime.Now }
             };
 
-            
             var result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_CreateWorkItem", parameters);
 
             if (result.Item1)
@@ -84,10 +84,8 @@ namespace QuanLyCongViecAPI.Services
             }
         }
 
-
         public ResponseModel UpdateWorkItem(WorkItemUpdateModel model)
         {
-            
             if (model.WorkItemID <= 0)
             {
                 return new ResponseModel { Success = false, Message = "Invalid WorkItemID", ErrorCode = -1 };
@@ -109,10 +107,10 @@ namespace QuanLyCongViecAPI.Services
         new SqlParameter("@AssignerID", SqlDbType.Int) { Value = model.AssignerID },
         new SqlParameter("@Priority", SqlDbType.Int) { Value = model.Priority },
         new SqlParameter("@DepartmentIDs", SqlDbType.VarChar, -1) { Value = (object?)departmentIDs ?? DBNull.Value },
-        new SqlParameter("@UserIDs", SqlDbType.VarChar, -1) { Value = (object?)userIDs ?? DBNull.Value }
+        new SqlParameter("@UserIDs", SqlDbType.VarChar, -1) { Value = (object?)userIDs ?? DBNull.Value },
+        new SqlParameter("@DateCreate", SqlDbType.DateTime) { Value = (object?)model.DateCreate ?? DBNull.Value }
             };
 
-            
             var result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_UpdateWorkItem", parameters);
 
             if (result.Item1)
@@ -124,6 +122,7 @@ namespace QuanLyCongViecAPI.Services
                 return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1 };
             }
         }
+
 
         public ResponseModel GetWorkItemById(int workItemId)
         {
@@ -142,6 +141,33 @@ namespace QuanLyCongViecAPI.Services
             else if (result.Item1 && result.Item3.Rows.Count == 0)
             {
                 return new ResponseModel { Success = false, Message = "WorkItem not found", ErrorCode = 404 };
+            }
+            else
+            {
+                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1 };
+            }
+        }
+
+        public ResponseModel DeleteWorkItem(int workItemId)
+        {
+            // Kiểm tra nếu WorkItemID không hợp lệ
+            if (workItemId <= 0)
+            {
+                return new ResponseModel { Success = false, Message = "Invalid WorkItemID", ErrorCode = -1 };
+            }
+
+            // Thực hiện gọi stored procedure xóa WorkItem
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@WorkItemID", SqlDbType.Int) { Value = workItemId }
+            };
+
+            var result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_DeleteWorkItem", parameters);
+
+            // Kiểm tra kết quả và trả về Response tương ứng
+            if (result.Item1)
+            {
+                return new ResponseModel { Success = true };
             }
             else
             {
