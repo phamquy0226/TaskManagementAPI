@@ -15,34 +15,66 @@ namespace QuanLyCongViecAPI.Services
             _databaseHelper = new DatabaseHelper(configuration);
         }
 
-        public ResponseModel GetWorkItemList(string userName = null, string assignerName = null, DateTime? startDateFrom = null, DateTime? startDateTo = null, DateTime? endDateFrom = null, DateTime? endDateTo = null, int? status = null, int? departmentID = null, string searchTaskName = null, int? priority = null, bool? isPinned = null)
+        public ResponseModel GetWorkItemList(string userName = null, string assignerName = null,
+    DateTime? startDateFrom = null, DateTime? startDateTo = null,
+    DateTime? endDateFrom = null, DateTime? endDateTo = null,
+    int? status = null, int? departmentID = null,
+    string searchTaskName = null, int? priority = null, bool? isPinned = null,
+    int pageNumber = 1, int pageSize = 20)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
-                new SqlParameter("@UserName", SqlDbType.NVarChar, 100) { Value = userName ?? (object)DBNull.Value },
-                new SqlParameter("@AssignerName", SqlDbType.NVarChar, 100) { Value = assignerName ?? (object)DBNull.Value },
-                new SqlParameter("@StartDateFrom", SqlDbType.DateTime) { Value = startDateFrom ?? (object)DBNull.Value },
-                new SqlParameter("@StartDateTo", SqlDbType.DateTime) { Value = startDateTo ?? (object)DBNull.Value },
-                new SqlParameter("@EndDateFrom", SqlDbType.DateTime) { Value = endDateFrom ?? (object)DBNull.Value },
-                new SqlParameter("@EndDateTo", SqlDbType.DateTime) { Value = endDateTo ?? (object)DBNull.Value },
-                new SqlParameter("@Status", SqlDbType.Int) { Value = status ?? (object)DBNull.Value },
-                new SqlParameter("@DepartmentID", SqlDbType.Int) { Value = departmentID ?? (object)DBNull.Value },
-                new SqlParameter("@SearchTaskName", SqlDbType.NVarChar, 255) { Value = searchTaskName ?? (object)DBNull.Value },
-                new SqlParameter("@Priority", SqlDbType.Int) { Value = priority ?? (object)DBNull.Value },
-                new SqlParameter("@IsPinned", SqlDbType.Bit) { Value = isPinned ?? (object)DBNull.Value }
+        new SqlParameter("@UserName", SqlDbType.NVarChar, 100) { Value = userName ?? (object)DBNull.Value },
+        new SqlParameter("@AssignerName", SqlDbType.NVarChar, 100) { Value = assignerName ?? (object)DBNull.Value },
+        new SqlParameter("@StartDateFrom", SqlDbType.DateTime) { Value = startDateFrom ?? (object)DBNull.Value },
+        new SqlParameter("@StartDateTo", SqlDbType.DateTime) { Value = startDateTo ?? (object)DBNull.Value },
+        new SqlParameter("@EndDateFrom", SqlDbType.DateTime) { Value = endDateFrom ?? (object)DBNull.Value },
+        new SqlParameter("@EndDateTo", SqlDbType.DateTime) { Value = endDateTo ?? (object)DBNull.Value },
+        new SqlParameter("@Status", SqlDbType.Int) { Value = status ?? (object)DBNull.Value },
+        new SqlParameter("@DepartmentID", SqlDbType.Int) { Value = departmentID ?? (object)DBNull.Value },
+        new SqlParameter("@SearchTaskName", SqlDbType.NVarChar, 255) { Value = searchTaskName ?? (object)DBNull.Value },
+        new SqlParameter("@Priority", SqlDbType.Int) { Value = priority ?? (object)DBNull.Value },
+        new SqlParameter("@IsPinned", SqlDbType.Bit) { Value = isPinned ?? (object)DBNull.Value },
+        new SqlParameter("@PageNumber", SqlDbType.Int) { Value = pageNumber },
+        new SqlParameter("@PageSize", SqlDbType.Int) { Value = pageSize }
             };
 
-            Tuple<bool, string, DataTable> result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_GetWorkItemList", parameters);
+            // Gọi stored và nhận về DataSet
+            DataSet ds = _databaseHelper.ExecuteStoredProcedureWithDataSet("sp_GetWorkItemList", parameters);
 
-            if (result.Item1)
+            if (ds.Tables.Count >= 2)
             {
-                return new ResponseModel { Success = true, Data = _databaseHelper.MapDataTableToList<WorkItem>(result.Item3) };
+                // Table 0: trạng thái
+                var statusTable = ds.Tables[0];
+                bool success = Convert.ToBoolean(statusTable.Rows[0]["Success"]);
+                string errorMessage = statusTable.Rows[0]["ErrorMessage"]?.ToString();
+                int? errorCode = statusTable.Rows[0]["ErrorCode"] as int?;
+                int totalCount = Convert.ToInt32(statusTable.Rows[0]["TotalCount"]);
+
+                // Table 1: dữ liệu WorkItem
+                var dataTable = ds.Tables[1];
+                var workItems = _databaseHelper.MapDataTableToList<WorkItem>(dataTable);
+
+                return new ResponseModel
+                {
+                    Success = success,
+                    Message = errorMessage,
+                    ErrorCode = errorCode,
+                    TotalCount = totalCount,
+                    Data = workItems
+                };
             }
-            else
+
+            // Trường hợp lỗi bất thường
+            return new ResponseModel
             {
-                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1 }; 
-            }
+                Success = false,
+                Message = "No data returned.",
+                ErrorCode = -99
+            };
         }
+
+
 
         public ResponseModel CreateWorkItem(WorkItemCreateModel model)
         {
