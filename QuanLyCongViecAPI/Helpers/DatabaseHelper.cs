@@ -119,5 +119,72 @@ namespace QuanLyCongViecAPI.Helpers
             }
             return list;
         }
+
+        public Tuple<bool, string, DataTable, DataTable> ExecuteStoredProcedureWithMultipleResults(string storedProcedureName, SqlParameter[] parameters = null)
+        {
+            string connectionString = GetConnectionString();
+            bool success = false;
+            string errorMessage = null;
+            DataTable statusTable = null;
+            DataTable dataTable = null;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(storedProcedureName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        // Đọc bảng trạng thái đầu tiên
+                        statusTable = new DataTable();
+                        statusTable.Load(reader);
+
+                        // Đọc bảng dữ liệu tiếp theo (nếu có)
+                        if (reader.NextResult())
+                        {
+                            dataTable = new DataTable();
+                            dataTable.Load(reader);
+                        }
+                    }
+                }
+            }
+
+            if (statusTable != null && statusTable.Rows.Count > 0)
+            {
+                success = Convert.ToBoolean(statusTable.Rows[0]["Success"]);
+                errorMessage = statusTable.Rows[0]["ErrorMessage"]?.ToString();
+            }
+
+            return Tuple.Create(success, errorMessage, statusTable, dataTable);
+        }
+
+        public DataSet ExecuteStoredProcedureWithDataSet(string storedProcedureName, SqlParameter[] parameters)
+        {
+            string connectionString = GetConnectionString();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand(storedProcedureName, conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                if (parameters != null)
+                    cmd.Parameters.AddRange(parameters);
+
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                {
+                    DataSet ds = new DataSet();
+                    da.Fill(ds);
+                    return ds;
+                }
+            }
+        }
+
+
     }
 }

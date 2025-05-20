@@ -16,21 +16,27 @@ public class WorkItemController : ControllerBase
 
     [HttpGet]
     public ActionResult<ResponseModel> GetWorkItemList(
-        [FromQuery] string? userName,
-        [FromQuery] string? assignerName,
-        [FromQuery] DateTime? startDateFrom,
-        [FromQuery] DateTime? startDateTo,
-        [FromQuery] DateTime? endDateFrom,
-        [FromQuery] DateTime? endDateTo,
-        [FromQuery] int? status,
-        [FromQuery] int? departmentID,
-        [FromQuery] string? searchTaskName,
-        [FromQuery] int? priority,
-        [FromQuery] bool? isPinned)
+    [FromQuery] string? userName,
+    [FromQuery] string? assignerName,
+    [FromQuery] DateTime? startDateFrom,
+    [FromQuery] DateTime? startDateTo,
+    [FromQuery] DateTime? endDateFrom,
+    [FromQuery] DateTime? endDateTo,
+    [FromQuery] int? status,
+    [FromQuery] int? departmentID,
+    [FromQuery] string? searchTaskName,
+    [FromQuery] int? priority,
+    [FromQuery] bool? isPinned,
+    [FromQuery] int pageNumber = 1,       // Thêm tham số phân trang
+    [FromQuery] int pageSize = 20)        // Thêm tham số phân trang
     {
-        var result = _workItemService.GetWorkItemList(userName, assignerName, startDateFrom, startDateTo, endDateFrom, endDateTo, status, departmentID, searchTaskName, priority, isPinned);
+        var result = _workItemService.GetWorkItemList(
+            userName, assignerName, startDateFrom, startDateTo, endDateFrom, endDateTo,
+            status, departmentID, searchTaskName, priority, isPinned,
+            pageNumber, pageSize);
         return Ok(result);
     }
+
 
     [HttpGet("{id}")]
     public IActionResult GetById(int id)
