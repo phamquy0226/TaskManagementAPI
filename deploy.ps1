@@ -1,29 +1,100 @@
 ﻿# ------------------------------------------------------------
-# Script deploy.ps1 – Deploy backend .NET API
+# Script deploy.ps1 – Deploy backend .NET API (Publish to temp folder then copy to IIS)
 # ------------------------------------------------------------
 
-# Đi tới thư mục code git clone của dự án
-cd "F:\ThucTap\TaskManagementAPI"
+Import-Module WebAdministration
 
-# Hiển thị log Pull code
-Write-Output "🔄 Pulling latest code from GitHub..."
+# ========================
+# Thông tin cấu hình
+# ========================
+$repoPath = "F:\ThucTap\TaskManagementAPI"
+$projectFile = "QuanLyCongViecAPI\TaskManagementAPI.csproj"
+$tempPublishPath = "F:\ThucTap\TempPublish"
+$deployPath = "F:\ThucTap\TASKAPI"
+$appPoolName = "TaskAPI"
+$backupPath = "F:\ThucTap\Backup\TASKAPI_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+
+# ========================
+# Hàm log với timestamp
+# ========================
+function Write-Log($message) {
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    Write-Output "[$timestamp] $message"
+}
+
+# ========================
+# Đi tới thư mục code git clone của dự án
+# ========================
+cd $repoPath
+
+Write-Log "🔄 Pulling latest code from GitHub..."
 git pull origin master
 
-# Restore NuGet packages (các thư viện cần thiết)
-Write-Output "📦 Restoring NuGet packages..."
-dotnet restore TaskManagementAPI.sln
+Write-Log "📦 Restoring NuGet packages..."
+dotnet restore $projectFile
 
-# Build solution với cấu hình Release
-Write-Output "🏗 Building project in Release mode..."
-dotnet build TaskManagementAPI.sln -c Release
+Write-Log "🏗 Building project in Release mode..."
+dotnet build $projectFile -c Release
 
-# Publish build output ra thư mục IIS đang trỏ tới
-Write-Output "🚀 Publishing project to IIS folder..."
-dotnet publish TaskManagementAPI.sln -c Release -o "F:\ThucTap\TASKAPI"
+Write-Log "🚀 Publishing project to temporary folder..."
+dotnet publish $projectFile -c Release -o $tempPublishPath
 
-# Restart IIS App Pool để nhận code mới
-Write-Output "♻️ Restarting IIS App Pool..."
-Restart-WebAppPool -Name "TaskAPI"
+# ========================
+# Stop App Pool trước khi copy đè
+# ========================
+Write-Log "🛑 Stopping IIS App Pool before copying files..."
+try {
+    Stop-WebAppPool -Name $appPoolName -ErrorAction Stop
+}
+catch {
+    Write-Log "⚠️ App Pool was already stopped or failed to stop gracefully."
+}
 
+# Chờ App Pool stop hoàn toàn
+Write-Log "⏳ Waiting for App Pool to stop completely..."
+$try = 0
+do {
+    Start-Sleep -Seconds 1
+    $status = (Get-WebAppPoolState -Name $appPoolName).Value
+    $try++
+    Write-Log "➡️ App Pool status: $status (try $try)"
+} while ($status -ne "Stopped" -and $try -lt 10)
+
+if ($status -ne "Stopped") {
+    Write-Log "⚠️ Warning: App Pool did not stop completely after 10 seconds."
+}
+
+# ========================
+# Backup thư mục deploy trước khi copy
+# ========================
+if (Test-Path $deployPath) {
+    Write-Log "💾 Backing up current deploy folder to $backupPath"
+    Copy-Item -Path $deployPath -Destination $backupPath -Recurse -Force
+}
+
+# ========================
+# Copy đè thư mục publish output sang deployPath
+# ========================
+Write-Log "📂 Copying published files to IIS folder..."
+Copy-Item -Path "$tempPublishPath\*" -Destination $deployPath -Recurse -Force
+
+# ========================
+# Start lại App Pool
+# ========================
+Write-Log "✅ Starting IIS App Pool..."
+Start-WebAppPool -Name $appPoolName
+
+# Chờ xác nhận App Pool running
+$status = (Get-WebAppPoolState -Name $appPoolName).Value
+Write-Log "➡️ App Pool current status: $status"
+
+# ========================
+# Xóa temp publish folder
+# ========================
+Write-Log "🧹 Cleaning up temporary publish folder..."
+Remove-Item -Path $tempPublishPath -Recurse -Force
+
+# ========================
 # Thông báo hoàn tất
-Write-Output "✅ Deploy completed successfully."
+# ========================
+Write-Log "🎉 Deploy completed successfully."
