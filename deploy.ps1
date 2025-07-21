@@ -15,10 +15,10 @@ function Write-Log($message) {
 # ========================
 try {
     Import-Module WebAdministration -ErrorAction Stop
-    Write-Log "✅ Imported WebAdministration module successfully."
+    Write-Log "  Imported WebAdministration module successfully."
 }
 catch {
-    Write-Log "❌ Failed to import WebAdministration. Please run PowerShell as Administrator."
+    Write-Log "  Failed to import WebAdministration. Please run PowerShell as Administrator."
     exit 1
 }
 
@@ -40,80 +40,80 @@ Set-Location $repoPath
 # ========================
 # Pull code mới nhất
 # ========================
-Write-Log "🔄 Pulling latest code from GitHub..."
+Write-Log "  Pulling latest code from GitHub..."
 git pull origin master
 
 # ========================
 # Restore, Build, Publish
 # ========================
-Write-Log "📦 Restoring NuGet packages..."
+Write-Log "  Restoring NuGet packages..."
 dotnet restore $projectFile -v m
 
-Write-Log "🏗 Building project in Release mode..."
+Write-Log "  Building project in Release mode..."
 dotnet build $projectFile -c Release -v m
 
-Write-Log "🚀 Publishing project to temporary folder..."
+Write-Log "  Publishing project to temporary folder..."
 dotnet publish $projectFile -c Release -o $tempPublishPath -v m
 
 # ========================
 # Stop App Pool trước khi copy đè
 # ========================
-Write-Log "🛑 Stopping IIS App Pool before copying files..."
+Write-Log "  Stopping IIS App Pool before copying files..."
 try {
     Stop-WebAppPool -Name $appPoolName -ErrorAction Stop
-    Write-Log "✅ App Pool stopped."
+    Write-Log "  App Pool stopped."
 }
 catch {
-    Write-Log "⚠️ App Pool was already stopped or failed to stop gracefully."
+    Write-Log "  App Pool was already stopped or failed to stop gracefully."
 }
 
 # Chờ App Pool stop hoàn toàn (max 10s)
-Write-Log "⏳ Waiting for App Pool to stop completely..."
+Write-Log "  Waiting for App Pool to stop completely..."
 for ($i = 1; $i -le 10; $i++) {
     $status = (Get-WebAppPoolState -Name $appPoolName).Value
-    Write-Log "➡️ App Pool status: $status (try $i)"
+    Write-Log "  App Pool status: $status (try $i)"
     if ($status -eq "Stopped") { break }
     Start-Sleep -Seconds 1
 }
 
 if ($status -ne "Stopped") {
-    Write-Log "⚠️ Warning: App Pool did not stop completely after 10 seconds."
+    Write-Log "  Warning: App Pool did not stop completely after 10 seconds."
 }
 
 # ========================
 # Backup thư mục deploy trước khi copy
 # ========================
 if (Test-Path $deployPath) {
-    Write-Log "💾 Backing up current deploy folder to $backupPath"
+    Write-Log "  Backing up current deploy folder to $backupPath"
     Copy-Item -Path $deployPath -Destination $backupPath -Recurse -Force
 }
 
 # ========================
 # Copy publish output sang deployPath
 # ========================
-Write-Log "📂 Copying published files to IIS folder..."
+Write-Log "  Copying published files to IIS folder..."
 Copy-Item -Path "$tempPublishPath\*" -Destination $deployPath -Recurse -Force -ErrorAction Stop
 
 # ========================
 # Start lại App Pool
 # ========================
-Write-Log "✅ Starting IIS App Pool..."
+Write-Log "  Starting IIS App Pool..."
 Start-WebAppPool -Name $appPoolName -ErrorAction Stop
 
 # Kiểm tra status sau khi start
 $status = (Get-WebAppPoolState -Name $appPoolName).Value
-Write-Log "➡️ App Pool current status: $status"
+Write-Log "  App Pool current status: $status"
 
 # ========================
 # Xóa temp publish folder
 # ========================
 if (Test-Path $tempPublishPath) {
-    Write-Log "🧹 Cleaning up temporary publish folder..."
+    Write-Log "  Cleaning up temporary publish folder..."
     Remove-Item -Path $tempPublishPath -Recurse -Force
 }
 
 # ========================
 # Thông báo hoàn tất
 # ========================
-Write-Log "🎉 Deploy completed successfully."
+Write-Log "  Deploy completed successfully."
 exit 0
