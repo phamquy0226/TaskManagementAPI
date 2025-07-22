@@ -29,7 +29,7 @@ namespace QuanLyCongViecAPI.Services
             }
             else
             {
-                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1100 };
+                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -111111 };
             }
         }
 
