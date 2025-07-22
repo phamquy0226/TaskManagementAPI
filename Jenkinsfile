@@ -12,19 +12,14 @@ pipeline {
             steps {
                 script {
                     checkout scm
-                    // Detect branch name
-                    env.GIT_BRANCH = bat(script: "git symbolic-ref --short HEAD || echo HEAD", returnStdout: true).trim()
-                    if (env.GIT_BRANCH.startsWith("origin/")) {
-                        env.GIT_BRANCH = env.GIT_BRANCH.replace("origin/", "")
-                    }
-                    echo "Current branch: ${env.GIT_BRANCH}"
+                    echo "Current branch: ${env.BRANCH_NAME}"
                 }
             }
         }
 
         stage('Deploy to IIS') {
             when {
-                expression { env.GIT_BRANCH == 'master' }
+                expression { env.BRANCH_NAME == 'master' }
             }
             stages {
                 stage('Restore') {
