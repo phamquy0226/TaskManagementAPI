@@ -12,10 +12,21 @@ pipeline {
             steps {
                 script {
                     checkout scm
-                    echo "Current branch: ${env.BRANCH_NAME}"
+
+                    // Detect branch robustly even if detached HEAD
+                    def branch = bat(
+                        script: 'git symbolic-ref --short HEAD || git describe --all',
+                        returnStdout: true
+                    ).trim()
+
+                    // Clean up refs if necessary
+                    branch = branch.replaceAll('^remotes/origin/', '')
+                    env.GIT_BRANCH = branch
+                    echo "Current branch: ${env.GIT_BRANCH}"
                 }
             }
         }
+
 
         stage('Deploy to IIS') {
             when {
