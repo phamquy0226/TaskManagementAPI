@@ -12,7 +12,8 @@ pipeline {
             steps {
                 script {
                     checkout scm
-                    env.GIT_BRANCH = bat(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    // Detect branch name
+                    env.GIT_BRANCH = bat(script: "git symbolic-ref --short HEAD || echo HEAD", returnStdout: true).trim()
                     if (env.GIT_BRANCH.startsWith("origin/")) {
                         env.GIT_BRANCH = env.GIT_BRANCH.replace("origin/", "")
                     }
@@ -21,54 +22,46 @@ pipeline {
             }
         }
 
-        stage('Restore') {
+        stage('Deploy to IIS') {
             when {
                 expression { env.GIT_BRANCH == 'master' }
             }
-            steps {
-                bat 'dotnet restore'
-            }
-        }
+            stages {
+                stage('Restore') {
+                    steps {
+                        bat 'dotnet restore'
+                    }
+                }
 
-        stage('Build') {
-            when {
-                expression { env.GIT_BRANCH == 'master' }
-            }
-            steps {
-                bat 'dotnet build --configuration Release'
-            }
-        }
+                stage('Build') {
+                    steps {
+                        bat 'dotnet build --configuration Release'
+                    }
+                }
 
-        stage('Stop IIS App Pool') {
-            when {
-                expression { env.GIT_BRANCH == 'master' }
-            }
-            steps {
-                powershell '''
-                    Import-Module WebAdministration
-                    Stop-WebAppPool -Name "$env:APPPOOL_NAME"
-                '''
-            }
-        }
+                stage('Stop IIS App Pool') {
+                    steps {
+                        powershell '''
+                            Import-Module WebAdministration
+                            Stop-WebAppPool -Name "$env:APPPOOL_NAME"
+                        '''
+                    }
+                }
 
-        stage('Publish') {
-            when {
-                expression { env.GIT_BRANCH == 'master' }
-            }
-            steps {
-                bat "dotnet publish QuanLyCongViecAPI\\TaskManagementAPI.csproj -c Release -o ${env.DEPLOY_PATH}"
-            }
-        }
+                stage('Publish') {
+                    steps {
+                        bat "dotnet publish QuanLyCongViecAPI\\TaskManagementAPI.csproj -c Release -o ${env.DEPLOY_PATH}"
+                    }
+                }
 
-        stage('Start IIS App Pool') {
-            when {
-                expression { env.GIT_BRANCH == 'master' }
-            }
-            steps {
-                powershell '''
-                    Import-Module WebAdministration
-                    Start-WebAppPool -Name "$env:APPPOOL_NAME"
-                '''
+                stage('Start IIS App Pool') {
+                    steps {
+                        powershell '''
+                            Import-Module WebAdministration
+                            Start-WebAppPool -Name "$env:APPPOOL_NAME"
+                        '''
+                    }
+                }
             }
         }
     }
