@@ -5,7 +5,6 @@
         DOTNET_ROOT = 'C:\\Program Files\\dotnet'
         DEPLOY_PATH = 'F:\\ThucTap\\TASKAPI'
         APPPOOL_NAME = 'TaskAPI'
-        PROJECT_PATH = 'QuanLyCongViecAPI\\TaskManagementAPI.csproj' // đường dẫn csproj cần publish
     }
 
     stages {
@@ -28,26 +27,17 @@
             }
         }
 
-        stage('Stop IIS App Pool') {
-            steps {
-                powershell '''
-                    Import-Module WebAdministration
-                    Stop-WebAppPool -Name "$env:APPPOOL_NAME"
-                '''
-            }
-        }
-
         stage('Publish') {
             steps {
-                bat "dotnet publish ${env.PROJECT_PATH} -c Release -o ${env.DEPLOY_PATH}"
+                bat "dotnet publish -c Release -o ${env.DEPLOY_PATH}"
             }
         }
 
-        stage('Start IIS App Pool') {
+        stage('Restart IIS App Pool') {
             steps {
                 powershell '''
                     Import-Module WebAdministration
-                    Start-WebAppPool -Name "$env:APPPOOL_NAME"
+                    Restart-WebAppPool -Name "$env:APPPOOL_NAME"
                 '''
             }
         }
@@ -62,3 +52,4 @@
         }
     }
 }
+ 
