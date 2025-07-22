@@ -33,7 +33,7 @@ namespace QuanLyCongViecAPI.Services
             }
         }
 
-        //test jenkins 111
+        //test jenkins 222
         public ResponseModel CreateDepartment(DepartmentCreateModel model)
         {
             SqlParameter[] parameters = new SqlParameter[]
