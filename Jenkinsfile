@@ -10,13 +10,18 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/phamquy0226/TaskManagementAPI.git', branch: 'master'
+                // Clone repo và set biến GIT_BRANCH để check branch
+                script {
+                    checkout scm
+                    env.GIT_BRANCH = bat(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    echo "Current branch: ${env.GIT_BRANCH}"
+                }
             }
         }
 
         stage('Restore') {
             when {
-                branch 'master'
+                expression { env.GIT_BRANCH == 'master' }
             }
             steps {
                 bat 'dotnet restore'
@@ -25,7 +30,7 @@ pipeline {
 
         stage('Build') {
             when {
-                branch 'master'
+                expression { env.GIT_BRANCH == 'master' }
             }
             steps {
                 bat 'dotnet build --configuration Release'
@@ -34,7 +39,7 @@ pipeline {
 
         stage('Stop IIS App Pool') {
             when {
-                branch 'master'
+                expression { env.GIT_BRANCH == 'master' }
             }
             steps {
                 powershell '''
@@ -46,7 +51,7 @@ pipeline {
 
         stage('Publish') {
             when {
-                branch 'master'
+                expression { env.GIT_BRANCH == 'master' }
             }
             steps {
                 bat "dotnet publish QuanLyCongViecAPI\\TaskManagementAPI.csproj -c Release -o ${env.DEPLOY_PATH}"
@@ -55,7 +60,7 @@ pipeline {
 
         stage('Start IIS App Pool') {
             when {
-                branch 'master'
+                expression { env.GIT_BRANCH == 'master' }
             }
             steps {
                 powershell '''
