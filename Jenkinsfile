@@ -10,10 +10,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Clone repo và set biến GIT_BRANCH để check branch
                 script {
                     checkout scm
                     env.GIT_BRANCH = bat(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    if (env.GIT_BRANCH.startsWith("origin/")) {
+                        env.GIT_BRANCH = env.GIT_BRANCH.replace("origin/", "")
+                    }
                     echo "Current branch: ${env.GIT_BRANCH}"
                 }
             }
