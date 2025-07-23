@@ -25,11 +25,11 @@ namespace QuanLyCongViecAPI.Services
             if (result.Item1)
             {
                 var departments = _databaseHelper.MapDataTableToList<Department>(result.Item3);
-                return new ResponseModel { Success = true, Data = departments, ErrorCode = -1000 };
+                return new ResponseModel { Success = true, Data = departments, ErrorCode = -100 };
             }
             else
             {
-                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1111111 };
+                return new ResponseModel { Success = false, Message = result.Item2, ErrorCode = -1 };
             }
         }
 
