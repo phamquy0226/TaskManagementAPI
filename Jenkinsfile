@@ -12,8 +12,6 @@ pipeline {
             steps {
                 script {
                     checkout scm
-
-                    // Get branch name directly
                     def branch = bat(
                         script: 'git rev-parse --abbrev-ref HEAD',
                         returnStdout: true
@@ -50,6 +48,18 @@ pipeline {
                         '''
                     }
                 }
+                stage('Backup deploy folder') {
+                    steps {
+                        script {
+                            def backupPath = "F:\\ThucTap\\Backup\\TASKAPI_${new Date().format('yyyyMMdd_HHmmss')}"
+                            powershell """
+                                Copy-Item '${DEPLOY_PATH}' '${backupPath}' -Recurse
+                                Write-Host 'Backup to ${backupPath} completed.'
+                            """
+                        }
+                    }
+                }
+
 
                 stage('Publish') {
                     steps {
