@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     echo "Cleaning workspace to ensure a fresh build..."
-                    deleteDir() // Xóa toàn bộ file/folder cũ trong workspace
+                    deleteDir()  
                 }
             }
         }
@@ -23,7 +23,7 @@ pipeline {
                 script {
                     checkout scm
 
-                    // Lấy tên branch hiện tại
+                    
                     def branch = bat(
                         script: 'git rev-parse --abbrev-ref HEAD',
                         returnStdout: true
@@ -37,7 +37,7 @@ pipeline {
 
         stage('Deploy to IIS') {
             when {
-                // Triển khai nếu nhánh kết thúc bằng '/master'
+            
                 expression { env.GIT_BRANCH.endsWith('/master') }
             }
 
