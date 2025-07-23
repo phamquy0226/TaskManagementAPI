@@ -25,7 +25,11 @@ namespace QuanLyCongViecAPI.Services
             if (result.Item1)
             {
                 var departments = _databaseHelper.MapDataTableToList<Department>(result.Item3);
+<<<<<<< Updated upstream
                 return new ResponseModel { Success = true, Data = departments, Message = "deploy code thử log 1" };
+=======
+                return new ResponseModel { Success = true, Data = departments, Message = "kiểm tra lỗi backup" };
+>>>>>>> Stashed changes
             }
             else
             {
