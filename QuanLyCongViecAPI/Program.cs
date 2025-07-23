@@ -29,15 +29,13 @@ builder.Configuration.GetConnectionString("WorkManagementDB_EN");
 
 var app = builder.Build();
 
-
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 
+app.UseDeveloperExceptionPage();
 
 app.UseRouting();
 
