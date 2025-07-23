@@ -26,7 +26,7 @@ namespace QuanLyCongViecAPI.Services
             {
                 var departments = _databaseHelper.MapDataTableToList<Department>(result.Item3);
 
-                return new ResponseModel { Success = true, Data = departments, Message = "deploy" };
+                return new ResponseModel { Success = true, Data = departments, Message = "deploy 1111" };
             }
             else
             {
