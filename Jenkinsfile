@@ -20,17 +20,16 @@ pipeline {
                     ).trim()
 
                     // Clean up refs if necessary
-                    branch = branch.replaceAll('^remotes/origin/', '')
+                    branch = branch.replaceAll('^remotes/origin/', '').replaceAll('^origin/', '')
                     env.GIT_BRANCH = branch
                     echo "Current branch: ${env.GIT_BRANCH}"
                 }
             }
         }
 
-
         stage('Deploy to IIS') {
             when {
-                expression { env.BRANCH_NAME == 'master' }
+                expression { env.GIT_BRANCH == 'master' }
             }
             stages {
                 stage('Restore') {
