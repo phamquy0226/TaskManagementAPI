@@ -21,7 +21,7 @@ namespace QuanLyCongViecAPI.Services
         {
             SqlParameter[] parameters = new SqlParameter[] { };
             var result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_GetDepartments", parameters);
-            var message = "deploy code";
+            var message = "deploy code test";
             if (result.Item1)
             {
                 var departments = _databaseHelper.MapDataTableToList<Department>(result.Item3);
