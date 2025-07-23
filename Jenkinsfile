@@ -26,9 +26,9 @@ pipeline {
         }
 
         stage('Deploy to IIS') {
-            when {
-                expression { env.GIT_BRANCH == 'master' }
-            }
+           when {
+                    expression { env.GIT_BRANCH.endsWith('master') }
+                }
             stages {
                 stage('Restore') {
                     steps {
