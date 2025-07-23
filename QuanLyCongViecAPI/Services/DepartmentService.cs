@@ -21,11 +21,11 @@ namespace QuanLyCongViecAPI.Services
         {
             SqlParameter[] parameters = new SqlParameter[] { };
             var result = _databaseHelper.ExecuteStoredProcedureWithStatus("sp_GetDepartments", parameters);
-            
+            var message = "deploy code";
             if (result.Item1)
             {
                 var departments = _databaseHelper.MapDataTableToList<Department>(result.Item3);
-                return new ResponseModel { Success = true, Data = departments, ErrorCode = 1001 };
+                return new ResponseModel { Success = true, Data = departments, Message = message };
             }
             else
             {
