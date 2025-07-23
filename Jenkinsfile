@@ -13,19 +13,16 @@ pipeline {
                 script {
                     checkout scm
 
-                    // Detect branch robustly even if detached HEAD
+                    // Detect current branch robustly
                     def branch = bat(
-                        script: 'git symbolic-ref --short HEAD || git describe --all',
+                        script: 'git rev-parse --abbrev-ref HEAD',
                         returnStdout: true
                     ).trim()
 
-                    echo "Raw branch: ${branch}"
-
-                    // Clean up: remove refs/heads/, remotes/origin/, origin/
-                    branch = branch.replaceFirst(/(refs\/heads\/|remotes\/origin\/|origin\/)/, '')
+                    echo "=== RAW BRANCH: ${branch} ==="
 
                     env.GIT_BRANCH = branch
-                    echo "Current branch: ${env.GIT_BRANCH}"
+                    echo "=== CURRENT BRANCH: ${env.GIT_BRANCH} ==="
                 }
             }
         }
@@ -33,6 +30,7 @@ pipeline {
         stage('Restore') {
             when { expression { env.GIT_BRANCH == 'master' } }
             steps {
+                echo '🔧 Restore NuGet packages...'
                 bat 'dotnet restore'
             }
         }
@@ -40,6 +38,7 @@ pipeline {
         stage('Build') {
             when { expression { env.GIT_BRANCH == 'master' } }
             steps {
+                echo '⚙️ Build project in Release mode...'
                 bat 'dotnet build --configuration Release'
             }
         }
@@ -47,6 +46,7 @@ pipeline {
         stage('Stop IIS App Pool') {
             when { expression { env.GIT_BRANCH == 'master' } }
             steps {
+                echo '🛑 Stopping IIS App Pool...'
                 powershell '''
                     Import-Module WebAdministration
                     Stop-WebAppPool -Name "$env:APPPOOL_NAME"
@@ -57,6 +57,7 @@ pipeline {
         stage('Publish') {
             when { expression { env.GIT_BRANCH == 'master' } }
             steps {
+                echo '🚀 Publishing to deployment folder...'
                 bat "dotnet publish QuanLyCongViecAPI\\TaskManagementAPI.csproj -c Release -o ${env.DEPLOY_PATH}"
             }
         }
@@ -64,6 +65,7 @@ pipeline {
         stage('Start IIS App Pool') {
             when { expression { env.GIT_BRANCH == 'master' } }
             steps {
+                echo '✅ Starting IIS App Pool...'
                 powershell '''
                     Import-Module WebAdministration
                     Start-WebAppPool -Name "$env:APPPOOL_NAME"
@@ -74,10 +76,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deploy thành công!'
+            echo '🎉 Deploy thành công!'
         }
         failure {
-            echo 'Deploy thất bại!'
+            echo '❌ Deploy thất bại!'
         }
     }
 }
