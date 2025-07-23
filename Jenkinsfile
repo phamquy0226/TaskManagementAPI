@@ -12,14 +12,18 @@ pipeline {
             steps {
                 script {
                     checkout scm
+
+                    // Detect branch robustly even if detached HEAD
                     def branch = bat(
                         script: 'git symbolic-ref --short HEAD || git describe --all',
                         returnStdout: true
                     ).trim()
-                    branch = branch.replaceAll('^refs/heads/', '')
-                                   .replaceAll('^remotes/origin/', '')
-                                   .replaceAll('^origin/', '')
-                                   .replaceAll('heads/', '')
+
+                    echo "Raw branch: ${branch}"
+
+                    // Clean up: remove refs/heads/, remotes/origin/, origin/
+                    branch = branch.replaceFirst(/(refs\/heads\/|remotes\/origin\/|origin\/)/, '')
+
                     env.GIT_BRANCH = branch
                     echo "Current branch: ${env.GIT_BRANCH}"
                 }
@@ -69,7 +73,11 @@ pipeline {
     }
 
     post {
-        success { echo 'Deploy thành công!' }
-        failure { echo 'Deploy thất bại!' }
+        success {
+            echo 'Deploy thành công!'
+        }
+        failure {
+            echo 'Deploy thất bại!'
+        }
     }
 }
