@@ -25,7 +25,8 @@ namespace QuanLyCongViecAPI.Services
             if (result.Item1)
             {
                 var departments = _databaseHelper.MapDataTableToList<Department>(result.Item3);
-                return new ResponseModel { Success = true, Data = departments, Message = "kiểm tra lỗi" };
+
+                return new ResponseModel { Success = true, Data = departments, Message = "kiểm tra lỗi backup" };
             }
             else
             {

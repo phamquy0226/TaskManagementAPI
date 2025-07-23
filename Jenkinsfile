@@ -8,10 +8,22 @@ pipeline {
     }
 
     stages {
+
+        stage('Clean workspace') {
+            steps {
+                script {
+                    echo "Cleaning workspace to ensure a fresh build..."
+                    deleteDir() // Xóa toàn bộ file/folder cũ trong workspace
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 script {
                     checkout scm
+
+                    // Lấy tên branch hiện tại
                     def branch = bat(
                         script: 'git rev-parse --abbrev-ref HEAD',
                         returnStdout: true
@@ -24,10 +36,13 @@ pipeline {
         }
 
         stage('Deploy to IIS') {
-           when {
-                    expression { env.GIT_BRANCH.endsWith('/master') }
-                }
+            when {
+                // Triển khai nếu nhánh kết thúc bằng '/master'
+                expression { env.GIT_BRANCH.endsWith('/master') }
+            }
+
             stages {
+
                 stage('Restore') {
                     steps {
                         bat 'dotnet restore'
@@ -48,10 +63,13 @@ pipeline {
                         '''
                     }
                 }
+
                 stage('Backup deploy folder') {
                     steps {
                         script {
                             def backupPath = "F:\\ThucTap\\Backup\\TASKAPI_${new Date().format('yyyyMMdd_HHmmss')}"
+                            echo "Backing up current deploy folder to: ${backupPath}"
+
                             powershell """
                                 Copy-Item '${DEPLOY_PATH}' '${backupPath}' -Recurse
                                 Write-Host 'Backup to ${backupPath} completed.'
@@ -59,7 +77,6 @@ pipeline {
                         }
                     }
                 }
-
 
                 stage('Publish') {
                     steps {
@@ -75,6 +92,7 @@ pipeline {
                         '''
                     }
                 }
+
             }
         }
     }
