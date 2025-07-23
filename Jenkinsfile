@@ -20,7 +20,10 @@ pipeline {
                     ).trim()
 
                     // Clean up refs if necessary
-                    branch = branch.replaceAll('^remotes/origin/', '').replaceAll('^origin/', '')
+                    branch = branch.replaceAll('^refs/heads/', '')
+                                .replaceAll('^remotes/origin/', '')
+                                .replaceAll('^origin/', '')
+                                .replaceAll('heads/', '')
                     env.GIT_BRANCH = branch
                     echo "Current branch: ${env.GIT_BRANCH}"
                 }
